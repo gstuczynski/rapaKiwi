@@ -4,17 +4,44 @@ import {
   StyleSheet,
   Text,
   View,
+  VrButton,
+  Environment,
+   asset
 } from 'react-360';
+import RapaPanel from './Panels/RapaPanel'
+import SaintKostkaPanelWithStore from './Panels/SaintKostkaPanel'
+import Panels from './panels'
 
-export default class rapaKiwi extends React.Component {
+import Actions from './actions/actions';
+import Rstore from './stores/store';
+import connectToStores from './connectToStores';
+import alt from './alt';
+
+
+const storeConnector = {
+  Rstore(Store) {
+    return {
+      displayRapaPanel: Store.getDisplayRapaPanelState(),
+      displaySaintKostkaPanel: Store.getDisplaySaintKostkaPanelState(),
+
+    };
+  },
+};
+
+class RapaKiwi extends React.Component {
+
+  componentDidMount(){
+    Environment.setBackgroundImage(asset('rapa_kiwi.jpg'), { format: '2D' });
+
+  }
+  
   render() {
+console.log(!this.props.displayRapaPanel)
     return (
-      <View style={styles.panel}>
-        <View style={styles.greetingBox}>
-          <Text style={styles.greeting}>
-            Welcome to React 360
-          </Text>
-        </View>
+      <View style={styles.panel} >
+        <VrButton style={styles.buttonRapa} onClick={()=>Actions.changeDisplayRapaPanelState(true)} />
+        <VrButton style={styles.buttonSaintKostka} onClick={()=>Actions.changeDisplaySaintKostkaPanelState(true)} disabled={this.props.displaySaintKostkaPanel} />
+
       </View>
     );
   }
@@ -23,21 +50,39 @@ export default class rapaKiwi extends React.Component {
 const styles = StyleSheet.create({
   panel: {
     // Fill the entire surface
-    width: 1000,
-    height: 600,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+  //bottom:-200,
+    width: 4096,
+    height: 720,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  greetingBox: {
-    padding: 20,
-    backgroundColor: '#000000',
-    borderColor: '#639dda',
-    borderWidth: 2,
-  },
+
   greeting: {
     fontSize: 30,
   },
+  buttonRapa: {
+    width: 260,
+    height: 200,
+    position: 'absolute',
+    top: 220,
+    left: 1850
+  },
+  buttonSaintKostka: {
+    width: 100,
+    height: 240,
+    position: 'absolute',
+    top: 90,
+    left: 3900
+  }
 });
 
-AppRegistry.registerComponent('rapaKiwi', () => rapaKiwi);
+const RapaKiwiWithStore = connectToStores(RapaKiwi, [Rstore], storeConnector);
+export default RapaKiwiWithStore;
+
+AppRegistry.registerComponent('RapaKiwi', () => RapaKiwiWithStore);
+
+//AppRegistry.registerComponent('SaintKostkaPanel', () => SaintKostkaPanelWithStore);
+//AppRegistry.registerComponent('RapaPanel', () => RapaPanel);
+AppRegistry.registerComponent('Panels', () => Panels);
+
+
